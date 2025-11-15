@@ -745,9 +745,64 @@ const Layout = () => {
       <CreateProjectModal
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
-        onSuccess={(newProject) => {
+        onSuccess={async (newProject) => {
           console.log('Layout收到新项目:', newProject);
-          setProjects(prev => [...prev, newProject]);
+          
+          // 为新项目获取任务统计信息（保持与fetchProjects的数据结构一致）
+          let projectWithStats;
+          try {
+            const projectTasksResponse = await taskAPI.getProjectTasks(newProject.id);
+            const projectTasks = projectTasksResponse.data ? projectTasksResponse.data.tasks : projectTasksResponse.tasks || [];
+            
+            // 计算任务统计
+            const taskStats = {
+              total: projectTasks.length,
+              todo: projectTasks.filter(task => task.status === 'todo').length,
+              in_progress: projectTasks.filter(task => task.status === 'in_progress').length,
+              completed: projectTasks.filter(task => task.status === 'done').length,
+              cancelled: projectTasks.filter(task => task.status === 'cancelled').length
+            };
+            
+            // 检查过期任务
+            const hasOverdueTasks = projectTasks.some(task => {
+              if (!task.due_date) return false;
+              const dueDate = new Date(task.due_date);
+              const now = new Date();
+              const isOverdue = dueDate < now;
+              const isNotCompleted = task.status !== 'done';
+              return isOverdue && isNotCompleted;
+            });
+            
+            projectWithStats = {
+              ...newProject,
+              hasOverdueTasks,
+              taskStats
+            };
+          } catch (error) {
+            console.error('获取新项目任务统计失败:', error);
+            // 如果获取失败，使用默认值
+            projectWithStats = {
+              ...newProject,
+              hasOverdueTasks: false,
+              taskStats: {
+                total: 0,
+                todo: 0,
+                in_progress: 0,
+                completed: 0,
+                cancelled: 0
+              }
+            };
+          }
+          
+          // 使用函数式更新，将新项目添加到列表开头（最新的在前）
+          setProjects(prev => {
+            // 检查是否已存在（避免重复添加）
+            const exists = prev.find(p => p.id === newProject.id);
+            if (exists) {
+              return prev;
+            }
+            return [projectWithStats, ...prev];
+          });
           setShowCreateModal(false);
         }}
       />

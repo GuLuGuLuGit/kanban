@@ -4,7 +4,7 @@ import { projectAPI } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 
 const ProjectDetailModal = ({ isOpen, onClose, project, onUpdate, onDelete }) => {
-  const { hasProjectPermission } = useAuth();
+  const { hasProjectPermission, user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -14,6 +14,7 @@ const ProjectDetailModal = ({ isOpen, onClose, project, onUpdate, onDelete }) =>
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [projectWithRole, setProjectWithRole] = useState(null);
 
   // 当项目数据变化时，更新表单数据
   useEffect(() => {
@@ -23,16 +24,50 @@ const ProjectDetailModal = ({ isOpen, onClose, project, onUpdate, onDelete }) =>
         name: project.name,
         description: project.description,
         owner: project.owner,
-        membersCount: project.members?.length || 0
+        membersCount: project.members?.length || 0,
+        user_role: project.user_role,
+        owner_id: project.owner_id
       });
+      
+      // 如果项目已经有 user_role 字段，直接使用
+      if (project.user_role) {
+        setProjectWithRole(project);
+      } else if (project.id) {
+        // 如果项目没有 user_role 字段，尝试从 API 获取完整信息
+        projectAPI.getProject(project.id).then(response => {
+          const fullProject = response.project || response;
+          const userRole = response.user_role;
+          if (fullProject) {
+            // 更新项目数据，添加 user_role（如果没有则尝试从 owner_id 判断）
+            const projectWithRoleData = { 
+              ...fullProject, 
+              user_role: userRole || (fullProject.owner_id === user?.id ? 'owner' : null)
+            };
+            setProjectWithRole(projectWithRoleData);
+            console.log('获取到项目完整信息（含user_role）:', projectWithRoleData);
+          }
+        }).catch(error => {
+          console.error('获取项目详情失败:', error);
+          // 如果获取失败，使用原始项目数据，并尝试从 owner_id 判断角色
+          const fallbackRole = project.owner_id === user?.id ? 'owner' : null;
+          setProjectWithRole({ ...project, user_role: fallbackRole });
+        });
+      } else {
+        // 没有项目ID，使用原始数据
+        const fallbackRole = project.owner_id === user?.id ? 'owner' : null;
+        setProjectWithRole({ ...project, user_role: fallbackRole });
+      }
+      
       setFormData({
         name: project.name || '',
         projectOwner: project.owner || project.members?.find(m => m.role === 'owner')?.user || null,
         expectedCompletionDate: project.end_date ? project.end_date.split('T')[0] : '',
         description: (project.description || '').substring(0, 50) // 限制描述最多50字
       });
+    } else {
+      setProjectWithRole(null);
     }
-  }, [project]);
+  }, [project, user]);
 
 
   const handleInputChange = (field, value) => {
@@ -63,7 +98,7 @@ const ProjectDetailModal = ({ isOpen, onClose, project, onUpdate, onDelete }) =>
       setError('');
       
       // 调用更新项目API
-      const updatedProject = await projectAPI.updateProject(project.id, {
+      const updatedProject = await projectAPI.updateProject(displayProject.id, {
         name: formData.name,
         description: formData.description,
         endDate: formData.expectedCompletionDate
@@ -87,8 +122,8 @@ const ProjectDetailModal = ({ isOpen, onClose, project, onUpdate, onDelete }) =>
 
     try {
       setLoading(true);
-      await projectAPI.deleteProject(project.id);
-      onDelete(project.id);
+      await projectAPI.deleteProject(displayProject.id);
+      onDelete(displayProject.id);
       onClose();
     } catch (error) {
       setError('删除项目失败，请稍后重试');
@@ -106,8 +141,8 @@ const ProjectDetailModal = ({ isOpen, onClose, project, onUpdate, onDelete }) =>
 
   // 检查项目是否过期
   const isProjectOverdue = () => {
-    if (!project.end_date) return false;
-    const dueDate = new Date(project.end_date);
+    if (!displayProject?.end_date) return false;
+    const dueDate = new Date(displayProject.end_date);
     const now = new Date();
     return now > dueDate;
   };
@@ -134,6 +169,9 @@ const ProjectDetailModal = ({ isOpen, onClose, project, onUpdate, onDelete }) =>
       };
     }
   }, [isOpen]);
+
+  // 使用带 role 的项目数据，如果没有则使用原始项目数据
+  const displayProject = projectWithRole || project;
 
   if (!isOpen || !project) {
     return null;
@@ -167,7 +205,7 @@ const ProjectDetailModal = ({ isOpen, onClose, project, onUpdate, onDelete }) =>
                 </div>
               </div>
               <div className="flex items-center space-x-2">
-                {!isEditing && hasProjectPermission('edit_project', project) && (
+                {!isEditing && hasProjectPermission('edit_project', displayProject) && (
                   <button
                     onClick={() => setIsEditing(true)}
                     className="w-10 h-10 rounded-full bg-white/80 hover:bg-white flex items-center justify-center transition-all duration-200 shadow-sm"
@@ -213,7 +251,7 @@ const ProjectDetailModal = ({ isOpen, onClose, project, onUpdate, onDelete }) =>
                     />
                   ) : (
                     <div className="px-4 py-3 bg-white rounded-lg border border-gray-200">
-                      <span className="text-gray-900 font-medium">{project.name}</span>
+                      <span className="text-gray-900 font-medium">{displayProject.name}</span>
                     </div>
                   )}
                 </div>
@@ -239,10 +277,10 @@ const ProjectDetailModal = ({ isOpen, onClose, project, onUpdate, onDelete }) =>
                     </div>
                   ) : (
                     <div className="px-4 py-3 bg-white rounded-lg border border-gray-200 min-h-[60px]">
-                      {project.description ? (
+                      {displayProject.description ? (
                         <div className="flex items-start space-x-2">
                           <FileText className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                          <span className="whitespace-pre-wrap text-gray-900">{project.description}</span>
+                          <span className="whitespace-pre-wrap text-gray-900">{displayProject.description}</span>
                         </div>
                       ) : (
                         <span className="text-gray-500">无描述信息</span>
@@ -297,10 +335,10 @@ const ProjectDetailModal = ({ isOpen, onClose, project, onUpdate, onDelete }) =>
                     />
                   ) : (
                     <div className="px-4 py-3 bg-white rounded-lg border border-gray-200">
-                      {project.end_date ? (
+                      {displayProject.end_date ? (
                         <div className="flex items-center space-x-2">
                           <Calendar className="h-4 w-4 text-gray-400" />
-                          <span className="text-gray-900">{project.end_date.split('T')[0]}</span>
+                          <span className="text-gray-900">{displayProject.end_date.split('T')[0]}</span>
                         </div>
                       ) : (
                         <span className="text-gray-500">未设置</span>
@@ -329,7 +367,7 @@ const ProjectDetailModal = ({ isOpen, onClose, project, onUpdate, onDelete }) =>
                     <div className="text-sm text-red-800">
                       <div className="font-medium">项目已超过预计完成日期</div>
                       <div className="text-xs text-red-600 mt-1">
-                        预计完成日期：{project.end_date ? project.end_date.split('T')[0] : '未设置'}
+                        预计完成日期：{displayProject.end_date ? displayProject.end_date.split('T')[0] : '未设置'}
                       </div>
                     </div>
                   </div>
@@ -348,19 +386,19 @@ const ProjectDetailModal = ({ isOpen, onClose, project, onUpdate, onDelete }) =>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {project.created_at && (
+                {displayProject.created_at && (
                   <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200">
                     <span className="text-sm font-medium text-gray-700">创建时间</span>
                     <span className="text-sm font-semibold text-gray-900">
-                      {new Date(project.created_at).toLocaleDateString('zh-CN')}
+                      {new Date(displayProject.created_at).toLocaleDateString('zh-CN')}
                     </span>
                   </div>
                 )}
-                {project.updated_at && (
+                {displayProject.updated_at && (
                   <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200">
                     <span className="text-sm font-medium text-gray-700">更新时间</span>
                     <span className="text-sm font-semibold text-gray-900">
-                      {new Date(project.updated_at).toLocaleDateString('zh-CN')}
+                      {new Date(displayProject.updated_at).toLocaleDateString('zh-CN')}
                     </span>
                   </div>
                 )}
@@ -403,7 +441,7 @@ const ProjectDetailModal = ({ isOpen, onClose, project, onUpdate, onDelete }) =>
                 </button>
               ) : (
                 <>
-                  {hasProjectPermission('delete_project', project) && (
+                  {hasProjectPermission('delete_project', displayProject) && (
                     <button
                       onClick={handleDelete}
                       disabled={loading}
