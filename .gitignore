@@ -1,0 +1,61 @@
+# 依赖目录
+node_modules/
+frontend/node_modules/
+
+# 构建产物
+frontend/dist/
+backend/main
+*.exe
+*.dll
+*.so
+*.dylib
+
+# 数据库文件
+backend/data/*.db
+backend/data/*.db-shm
+backend/data/*.db-wal
+backend/data/*.db.backup
+
+# 上传文件
+backend/uploads/
+
+# 环境变量和配置文件
+.env
+.env.local
+.env.*.local
+backend/config.env
+*.env
+*.env.local
+
+# 日志文件
+*.log
+logs/
+backend_output.log
+frontend_output.log
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE 文件
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 临时文件
+*.tmp
+*.temp
+.cache/
+
+# Go 相关
+backend/vendor/
+*.test
+*.out
+
+# 其他
+*.bak
+*.backup
+
