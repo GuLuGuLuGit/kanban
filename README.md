@@ -180,7 +180,7 @@ go build -o project-manager.exe main.go
 
 ## 许可证
 
-[添加你的许可证信息]
+本项目采用 [MIT License](LICENSE) 开源协议。
 
 ## 贡献
 
