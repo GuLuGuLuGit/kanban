@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="ALL" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="46b49429-9f77-4cf0-ac5f-c5bc3e069dbd" name="更改" comment="">
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config.env" beforeDir="false" afterPath="$PROJECT_DIR$/config.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/config.go" beforeDir="false" afterPath="$PROJECT_DIR$/config/config.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/database.go" beforeDir="false" afterPath="$PROJECT_DIR$/database/database.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/handlers/activation_code.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/handlers/ai.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/handlers/auth.go" beforeDir="false" afterPath="$PROJECT_DIR$/handlers/auth.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/handlers/comment.go" beforeDir="false" afterPath="$PROJECT_DIR$/handlers/comment.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/handlers/notification.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/handlers/project.go" beforeDir="false" afterPath="$PROJECT_DIR$/handlers/project.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/handlers/stage.go" beforeDir="false" afterPath="$PROJECT_DIR$/handlers/stage.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/handlers/task.go" beforeDir="false" afterPath="$PROJECT_DIR$/handlers/task.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/handlers/upload.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/middleware/auth.go" beforeDir="false" afterPath="$PROJECT_DIR$/middleware/auth.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/create_files_table.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/models.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/models.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/routes.go" beforeDir="false" afterPath="$PROJECT_DIR$/routes/routes.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/cleanup_performance_data.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/ai_generate_project.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/ai_service.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/notification_service.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/oss.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/task_activity_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/task_activity_service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/websocket/advanced_conflict_resolver.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/websocket/client.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/websocket/collaboration_analytics.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/websocket/conflict_detector.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/websocket/conflict_handler.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/websocket/conflict_manager.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/websocket/conflict_resolver.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/websocket/distributed_lock.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/websocket/enhanced_client.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/websocket/enhanced_handler.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/websocket/enhanced_hub.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/websocket/handler.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/websocket/hub.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/websocket/operation_manager.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/websocket/performance_monitor.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/websocket/realtime_collaboration.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/websocket/reconnection_manager.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/websocket/routes.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/websocket/stage3_handler.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/websocket/types.go" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Go File" />
+      </list>
+    </option>
+  </component>
+  <component name="GOROOT" url="file://D:/workspace/test/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.6.windows-amd64" />
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
+  <component name="ProjectId" id="31ulta7o8CVkjYTiVCHTbjprGVi" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultGoTemplateProperty&quot;: &quot;Go File&quot;,
+    &quot;Go 构建.go build main.go.executor&quot;: &quot;Debug&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.modules.go.list.on.any.changes.was.set&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;myf&quot;,
+    &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;G:/000work_local/backend&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;onboarding.tips.debug.path&quot;: &quot;G:/project_manager/backend/main.go&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="G:\000work\backend\config" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Go 构建.go build main.go">
+    <configuration name="go build main.go" type="GoApplicationRunConfiguration" factoryName="Go Application" nameIsGenerated="true">
+      <module name="backend" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="FILE" />
+      <package value="project-manager-backend" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/main.go" />
+      <method v="2" />
+    </configuration>
+    <configuration name="go build project-manager-backend" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="backend" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="project-manager-backend" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/diagnose_oss.go" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Go 构建.go build project-manager-backend" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-gosdk-d297c17c1fbd-57c114c3cede-org.jetbrains.plugins.go.sharedIndexes.bundled-GO-243.26053.20" />
+        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-GO-243.26053.20" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="应用程序级" UseSingleDictionary="true" transferred="true" />
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VgoProject">
+    <settings-migrated>true</settings-migrated>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/handlers/ai.go</url>
+          <line>44</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/services/ai_service.go</url>
+          <line>186</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/services/ai_service.go</url>
+          <line>246</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/services/ai_service.go</url>
+          <line>210</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/services/ai_service.go</url>
+          <line>292</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+      </breakpoints>
+      <default-breakpoints>
+        <breakpoint type="DlvErrorBreakpoint" />
+      </default-breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>

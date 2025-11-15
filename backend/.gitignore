@@ -1,0 +1,5 @@
+main
+config.env
+.env
+*.env
+*.env.local
