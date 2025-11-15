@@ -98,11 +98,19 @@ const ProjectDetailModal = ({ isOpen, onClose, project, onUpdate, onDelete }) =>
       setError('');
       
       // 调用更新项目API
-      const updatedProject = await projectAPI.updateProject(displayProject.id, {
+      const response = await projectAPI.updateProject(displayProject.id, {
         name: formData.name,
         description: formData.description,
         endDate: formData.expectedCompletionDate
       });
+
+      // 从响应中提取项目数据
+      const updatedProject = response.project || response.data?.project || response;
+      
+      // 确保包含项目ID
+      if (!updatedProject.id && displayProject.id) {
+        updatedProject.id = displayProject.id;
+      }
 
       onUpdate(updatedProject);
       setIsEditing(false);
