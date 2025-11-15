@@ -147,7 +147,7 @@ const MemberManagement = ({ projectId, onClose }) => {
             </div>
           </div>
           
-          {hasProjectPermission('invite_members', { user_role: 'project_owner' }) && (
+          {hasProjectPermission('invite_members', null) && (
             <button
               onClick={() => setShowAddMember(true)}
               className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -192,7 +192,7 @@ const MemberManagement = ({ projectId, onClose }) => {
           <div className="text-center py-8">
             <Users className="h-12 w-12 text-gray-300 mx-auto mb-4" />
             <p className="text-gray-500">暂无协作人员</p>
-            {hasProjectPermission('invite_members', { user_role: 'project_owner' }) && (
+            {hasProjectPermission('invite_members', null) && (
               <button
                 onClick={() => setShowAddMember(true)}
                 className="mt-4 text-blue-600 hover:text-blue-700 text-sm"
@@ -207,7 +207,7 @@ const MemberManagement = ({ projectId, onClose }) => {
               const roleInfo = getRoleInfo(member.role);
               const IconComponent = roleInfo.icon;
               const isOwner = member.role === 'project_owner';
-              const canManage = hasProjectPermission('manage_members', { user_role: 'project_owner' }) && !isOwner;
+              const canManage = hasProjectPermission('manage_members', null) && !isOwner;
 
               return (
                 <div key={member.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">

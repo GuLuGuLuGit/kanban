@@ -94,64 +94,50 @@ export const AuthProvider = ({ children }) => {
   const isUser = user?.role === 'user';
 
   // 检查项目权限
+  // 单机版：只要用户已登录，就可以做所有操作
   const hasProjectPermission = (permission, projectData = null) => {
     if (!user) return false;
     
     // 系统管理员拥有所有权限
     if (isAdmin) return true;
     
-    // 普通用户权限检查
+    // 单机版：登录用户可以做所有操作
+    // 如果没有项目数据或项目数据没有 user_role 字段，默认允许（单机版特性）
+    if (!projectData || !projectData.user_role) {
+      return true; // 单机版：登录用户可以做所有操作
+    }
+    
+    // 如果有明确的 user_role 字段，进行权限检查（兼容多用户场景）
     switch (permission) {
       case 'create_project':
         return true; // 所有用户都可以创建项目
       
       case 'edit_project':
         // 只有项目所有者可以编辑项目
-        if (projectData) {
-          return projectData.user_role === 'owner';
-        }
-        return false;
+        return projectData.user_role === 'owner';
       
       case 'delete_project':
-        // 只有项目所有者可以删除项目
-        if (projectData) {
-          return projectData.user_role === 'owner';
-        }
-        return false;
+        // 单机版：所有项目成员都可以删除项目
+        return ['owner', 'manager', 'collaborator'].includes(projectData.user_role);
       
       case 'manage_stages':
-        // 项目所有者和项目管理员可以管理阶段
-        if (projectData) {
-          return projectData.user_role === 'owner' || 
-                 projectData.user_role === 'manager';
-        }
-        return false;
+        // 单机版：所有项目成员都可以管理阶段
+        return ['owner', 'manager', 'collaborator'].includes(projectData.user_role);
       
       case 'manage_tasks':
         // 所有项目成员都可以管理任务
-        if (projectData) {
-          return projectData.user_role === 'owner' || 
-                 projectData.user_role === 'manager' || 
-                 projectData.user_role === 'collaborator';
-        }
-        return false;
+        return ['owner', 'manager', 'collaborator'].includes(projectData.user_role);
       
       case 'invite_members':
-        // 只有项目所有者可以邀请成员
-        if (projectData) {
-          return projectData.user_role === 'owner';
-        }
-        return false;
+        // 单机版：所有项目成员都可以邀请成员
+        return ['owner', 'manager', 'collaborator'].includes(projectData.user_role);
       
       case 'manage_members':
-        // 只有项目所有者可以管理成员
-        if (projectData) {
-          return projectData.user_role === 'owner';
-        }
-        return false;
+        // 单机版：所有项目成员都可以管理成员
+        return ['owner', 'manager', 'collaborator'].includes(projectData.user_role);
       
       default:
-        return false;
+        return true; // 单机版：默认允许
     }
   };
 
