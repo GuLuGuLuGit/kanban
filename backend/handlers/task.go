@@ -83,11 +83,15 @@ func (h *TaskHandler) CreateTask(c *gin.Context) {
 		return
 	}
 
-	// 单机版：检查用户是否是项目成员即可
-	if !utils.CanManageTasks(userID, req.ProjectID) {
-		utils.Forbidden(c, "Insufficient permissions to create task")
-		return
-	}
+	// 单机版：所有登录用户都可以创建任务（不需要检查成员关系）
+	// 在单机版中，只要用户已通过JWT认证，就可以执行创建任务操作
+	// userID 会用于设置任务的 CreatedBy 字段和记录活动日志
+	
+	// 如果需要保留权限检查，可以取消下面的注释：
+	// if !utils.CanManageTasks(userID, req.ProjectID) {
+	// 	utils.Forbidden(c, "Insufficient permissions to create task")
+	// 	return
+	// }
 
 	// 检查阶段是否存在
 	var stage models.Stage
@@ -258,11 +262,15 @@ func (h *TaskHandler) UpdateTask(c *gin.Context) {
 		return
 	}
 
-	// 单机版：检查用户是否是项目成员即可
-	if !utils.CanManageTasks(userID, task.ProjectID) {
-		utils.Forbidden(c, "Insufficient permissions to update task")
-		return
-	}
+	// 单机版：所有登录用户都可以更新任务（不需要检查成员关系）
+	// 在单机版中，只要用户已通过JWT认证，就可以执行更新任务操作
+	// userID 会用于记录任务更新活动日志
+	
+	// 如果需要保留权限检查，可以取消下面的注释：
+	// if !utils.CanManageTasks(userID, task.ProjectID) {
+	// 	utils.Forbidden(c, "Insufficient permissions to update task")
+	// 	return
+	// }
 
 	var req UpdateTaskRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -399,11 +407,15 @@ func (h *TaskHandler) DeleteTask(c *gin.Context) {
 		return
 	}
 
-	// 单机版：检查用户是否是项目成员即可
-	if !utils.CanManageTasks(userID, task.ProjectID) {
-		utils.Forbidden(c, "Insufficient permissions to delete task")
-		return
-	}
+	// 单机版：所有登录用户都可以删除任务（不需要检查成员关系）
+	// 在单机版中，只要用户已通过JWT认证，就可以执行删除任务操作
+	// userID 会用于记录任务删除活动日志
+	
+	// 如果需要保留权限检查，可以取消下面的注释：
+	// if !utils.CanManageTasks(userID, task.ProjectID) {
+	// 	utils.Forbidden(c, "Insufficient permissions to delete task")
+	// 	return
+	// }
 
 	// 检查阶段是否允许删除任务
 	if !task.Stage.AllowTaskDeletion {
@@ -457,11 +469,15 @@ func (h *TaskHandler) MoveTask(c *gin.Context) {
 		return
 	}
 
-	// 单机版：检查用户是否是项目成员即可
-	if !utils.CanManageTasks(userID, task.ProjectID) {
-		utils.Forbidden(c, "Insufficient permissions to move task")
-		return
-	}
+	// 单机版：所有登录用户都可以移动任务（不需要检查成员关系）
+	// 在单机版中，只要用户已通过JWT认证，就可以执行移动任务操作
+	// userID 会用于记录任务移动活动日志
+	
+	// 如果需要保留权限检查，可以取消下面的注释：
+	// if !utils.CanManageTasks(userID, task.ProjectID) {
+	// 	utils.Forbidden(c, "Insufficient permissions to move task")
+	// 	return
+	// }
 
 	// 检查目标阶段是否存在
 	var newStage models.Stage

@@ -23,7 +23,7 @@ import {
 import CreateProjectModal from '../components/CreateProjectModal';
 
 const Dashboard = () => {
-  const { projects, loading } = useProjects();
+  const { projects, setProjects, loading } = useProjects();
   const [tasks, setTasks] = useState([]);
   const [tasksLoading, setTasksLoading] = useState(false); // 任务加载状态
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -172,8 +172,66 @@ const Dashboard = () => {
   // 创建项目
   const handleCreateProject = async (projectData) => {
     try {
-      const newProject = await projectAPI.createProject(projectData);
-      setProjects([...projects, newProject]);
+      const response = await projectAPI.createProject(projectData);
+      // 处理API返回的数据结构：response.project 或直接是 response
+      const newProject = response.project || response;
+      
+      // 为新项目获取任务统计信息（保持与Layout组件的数据结构一致）
+      let projectWithStats;
+      try {
+        const projectTasksResponse = await taskAPI.getProjectTasks(newProject.id);
+        const projectTasks = projectTasksResponse.data ? projectTasksResponse.data.tasks : projectTasksResponse.tasks || [];
+        
+        // 计算任务统计
+        const taskStats = {
+          total: projectTasks.length,
+          todo: projectTasks.filter(task => task.status === 'todo').length,
+          in_progress: projectTasks.filter(task => task.status === 'in_progress').length,
+          completed: projectTasks.filter(task => task.status === 'done').length,
+          cancelled: projectTasks.filter(task => task.status === 'cancelled').length
+        };
+        
+        // 检查过期任务
+        const hasOverdueTasks = projectTasks.some(task => {
+          if (!task.due_date) return false;
+          const dueDate = new Date(task.due_date);
+          const now = new Date();
+          const isOverdue = dueDate < now;
+          const isNotCompleted = task.status !== 'done';
+          return isOverdue && isNotCompleted;
+        });
+        
+        projectWithStats = {
+          ...newProject,
+          hasOverdueTasks,
+          taskStats
+        };
+      } catch (error) {
+        console.error('获取新项目任务统计失败:', error);
+        // 如果获取失败，使用默认值
+        projectWithStats = {
+          ...newProject,
+          hasOverdueTasks: false,
+          taskStats: {
+            total: 0,
+            todo: 0,
+            in_progress: 0,
+            completed: 0,
+            cancelled: 0
+          }
+        };
+      }
+      
+      // 使用函数式更新，确保使用最新的项目列表
+      setProjects(prev => {
+        // 检查是否已存在（避免重复添加）
+        const exists = prev.find(p => p.id === newProject.id);
+        if (exists) {
+          return prev;
+        }
+        // 将新项目添加到列表开头（最新的项目在前）
+        return [projectWithStats, ...prev];
+      });
       setShowCreateModal(false);
     } catch (error) {
       console.error('创建项目失败:', error);
@@ -389,20 +447,8 @@ const Dashboard = () => {
               <FolderOpen className="h-12 w-12 text-gray-400" />
             </div>
             <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              开始创建您的第一个项目
+              暂无项目
             </h3>
-            <p className="text-gray-600 mb-8 max-w-md mx-auto">
-              创建您的第一个项目，开始团队协作之旅
-            </p>
-            {hasPermission('create_project') && (
-              <button
-                onClick={() => setShowCreateModal(true)}
-                className="px-8 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center mx-auto"
-              >
-                <Plus className="mr-2 h-5 w-5" />
-                创建项目
-              </button>
-            )}
           </div>
         ) : viewMode !== 'calendar' ? (
           viewMode === 'list' ? (

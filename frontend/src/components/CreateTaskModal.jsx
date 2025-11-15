@@ -54,16 +54,47 @@ const CreateTaskModal = ({ isOpen, onClose, onSubmit, onSuccess, stage, projectI
   const fetchProjectMembers = async () => {
     try {
       const response = await projectAPI.getProjectMembers(projectId);
-      const members = (response.members || []).map(member => ({
+      let members = (response.members || []).map(member => ({
         id: member.user_id ?? member.id ?? member.user?.id ?? '',
         username: member.user?.username ?? member.username ?? `成员${member.user_id ?? member.id ?? ''}`,
         email: member.user?.email ?? member.email ?? '',
         projectRole: member.role ?? member.projectRole ?? '',
         systemRole: member.user?.role ?? member.systemRole ?? ''
       }));
+      
+      // 确保当前登录用户也在成员列表中（即使不在项目成员表中，也应该可以选择自己）
+      if (user && user.id) {
+        const currentUserInList = members.find(m => m.id?.toString() === user.id.toString());
+        if (!currentUserInList) {
+          // 如果当前用户不在成员列表中，添加进去
+          members = [
+            {
+              id: user.id,
+              username: user.username || '我',
+              email: user.email || '',
+              projectRole: 'owner', // 默认角色
+              systemRole: user.role || 'user'
+            },
+            ...members
+          ];
+        }
+      }
+      
       setProjectMembers(members);
     } catch (err) {
       console.error('获取项目成员失败:', err);
+      // 如果获取失败，至少确保当前用户可以在列表中选择自己
+      if (user && user.id) {
+        setProjectMembers([
+          {
+            id: user.id,
+            username: user.username || '我',
+            email: user.email || '',
+            projectRole: 'owner',
+            systemRole: user.role || 'user'
+          }
+        ]);
+      }
     }
   };
 
@@ -332,9 +363,11 @@ const CreateTaskModal = ({ isOpen, onClose, onSubmit, onSuccess, stage, projectI
 
                             {filteredMembers.length > 0 ? (
                               filteredMembers.map(member => (
-                                <div
+                                <button
                                   key={member.id}
-                                  className={`w-full px-4 py-3 text-left flex items-center ${
+                                  type="button"
+                                  onClick={() => handleAssigneeSelect(member.id)}
+                                  className={`w-full px-4 py-3 text-left flex items-center hover:bg-gray-50 transition-colors ${
                                     formData.assignee_id === member.id.toString() ? 'bg-blue-50 text-blue-600' : 'text-gray-700'
                                   }`}
                                 >
@@ -342,7 +375,7 @@ const CreateTaskModal = ({ isOpen, onClose, onSubmit, onSuccess, stage, projectI
                                   <div className="ml-3 flex-1 min-w-0">
                                     <div className="text-sm font-medium truncate">{member.username}</div>
                                   </div>
-                                </div>
+                                </button>
                               ))
                             ) : (
                               <div className="px-4 py-3 text-sm text-gray-500 text-center">

@@ -172,7 +172,7 @@ const StageManager = ({ projectId, onStageUpdate }) => {
         {stages.map((stage, index) => (
           <div
             key={stage.id}
-            draggable={hasProjectPermission('manage_stages', { user_role: 'project_owner' })}
+            draggable={hasProjectPermission('manage_stages', null)}
             onDragStart={(e) => handleDragStart(e, stage)}
             onDragEnd={handleDragEnd}
             onDrop={(e) => handleDrop(e, stage)}
@@ -184,7 +184,7 @@ const StageManager = ({ projectId, onStageUpdate }) => {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 {/* 拖拽手柄 */}
-                {hasProjectPermission('manage_stages', { user_role: 'project_owner' }) && (
+                {hasProjectPermission('manage_stages', null) && (
                   <GripVertical className="h-4 w-4 text-gray-400 cursor-move" />
                 )}
                 
@@ -218,7 +218,7 @@ const StageManager = ({ projectId, onStageUpdate }) => {
               </div>
 
               {/* 操作按钮 */}
-              {hasProjectPermission('manage_stages', { user_role: 'project_owner' }) && (
+              {hasProjectPermission('manage_stages', null) && (
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={() => setEditingStage(stage)}
@@ -258,7 +258,7 @@ const StageManager = ({ projectId, onStageUpdate }) => {
       </div>
 
       {/* 创建阶段按钮 */}
-      {hasProjectPermission('manage_stages', { user_role: 'project_owner' }) && (
+      {hasProjectPermission('manage_stages', null) && (
         <button
           onClick={() => setShowCreateForm(true)}
           className="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-blue-500 hover:text-blue-500 transition-colors"

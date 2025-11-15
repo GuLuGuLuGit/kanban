@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, User, Edit, Save, Calendar, AlertTriangle, FileText, Target, Trash2, Search, ChevronDown } from 'lucide-react';
-import { taskAPI } from '../services/api';
+import { taskAPI, projectAPI } from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
 
 const EditTaskModal = ({ isOpen, onClose, onSubmit, task, projectId, stages, availableMembers = [] }) => {
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -12,6 +14,7 @@ const EditTaskModal = ({ isOpen, onClose, onSubmit, task, projectId, stages, ava
     due_date: ''
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [projectMembers, setProjectMembers] = useState(availableMembers);
   
   // 人员选择下拉框状态
   const [isAssigneeDropdownOpen, setIsAssigneeDropdownOpen] = useState(false);
@@ -139,8 +142,77 @@ const EditTaskModal = ({ isOpen, onClose, onSubmit, task, projectId, stages, ava
     setAssigneeSearchQuery('');
   };
 
-  // 过滤人员列表
-  const filteredMembers = availableMembers.filter(member => {
+  // 获取项目成员函数
+  const fetchProjectMembers = async () => {
+    if (!projectId) return;
+    
+    try {
+      const response = await projectAPI.getProjectMembers(projectId);
+      let members = (response.members || []).map(member => ({
+        id: member.user_id ?? member.id ?? member.user?.id ?? '',
+        username: member.user?.username ?? member.username ?? `成员${member.user_id ?? member.id ?? ''}`,
+        email: member.user?.email ?? member.email ?? '',
+        projectRole: member.role ?? member.projectRole ?? '',
+        systemRole: member.user?.role ?? member.systemRole ?? ''
+      }));
+      
+      // 确保当前登录用户也在成员列表中（即使不在项目成员表中，也应该可以选择自己）
+      if (user && user.id) {
+        const currentUserInList = members.find(m => m.id?.toString() === user.id.toString());
+        if (!currentUserInList) {
+          // 如果当前用户不在成员列表中，添加进去
+          members = [
+            {
+              id: user.id,
+              username: user.username || '我',
+              email: user.email || '',
+              projectRole: 'owner', // 默认角色
+              systemRole: user.role || 'user'
+            },
+            ...members
+          ];
+        }
+      }
+      
+      setProjectMembers(members);
+    } catch (err) {
+      console.error('获取项目成员失败:', err);
+      // 如果获取失败，使用 availableMembers 或至少确保当前用户可以在列表中选择自己
+      if (availableMembers.length > 0) {
+        setProjectMembers(availableMembers);
+      } else if (user && user.id) {
+        setProjectMembers([
+          {
+            id: user.id,
+            username: user.username || '我',
+            email: user.email || '',
+            projectRole: 'owner',
+            systemRole: user.role || 'user'
+          }
+        ]);
+      }
+    }
+  };
+
+  // 获取项目成员（如果 availableMembers 为空或缺少当前用户）
+  useEffect(() => {
+    if (projectId && isOpen) {
+      // 如果 availableMembers 为空或没有当前用户，获取项目成员
+      const hasCurrentUser = availableMembers.some(m => m.id?.toString() === user?.id?.toString());
+      if (availableMembers.length === 0 || !hasCurrentUser) {
+        fetchProjectMembers();
+      } else {
+        setProjectMembers(availableMembers);
+      }
+    } else if (!isOpen) {
+      // 关闭时重置为 availableMembers
+      setProjectMembers(availableMembers);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectId, isOpen, availableMembers, user]);
+
+  // 过滤人员列表（使用 projectMembers 而不是 availableMembers）
+  const filteredMembers = projectMembers.filter(member => {
     if (!assigneeSearchQuery) return true;
     const query = assigneeSearchQuery.toLowerCase();
     return (
@@ -150,8 +222,8 @@ const EditTaskModal = ({ isOpen, onClose, onSubmit, task, projectId, stages, ava
     );
   });
 
-  // 获取选中的成员信息
-  const selectedMember = availableMembers.find(m => m.id.toString() === formData.assignee_id);
+  // 获取选中的成员信息（使用 projectMembers）
+  const selectedMember = projectMembers.find(m => m.id?.toString() === formData.assignee_id);
 
   // 删除任务
   const handleDelete = async () => {
@@ -387,9 +459,11 @@ const EditTaskModal = ({ isOpen, onClose, onSubmit, task, projectId, stages, ava
                           {/* 成员选项 */}
                                 {filteredMembers.length > 0 ? (
                                   filteredMembers.map(member => (
-                                    <div
+                                    <button
                                       key={member.id}
-                                      className={`w-full px-4 py-3 text-left flex items-center ${
+                                      type="button"
+                                      onClick={() => handleAssigneeSelect(member.id)}
+                                      className={`w-full px-4 py-3 text-left flex items-center hover:bg-gray-50 transition-colors ${
                                         formData.assignee_id === member.id.toString() ? 'bg-blue-50 text-blue-600' : 'text-gray-700'
                                       }`}
                                     >
@@ -397,7 +471,7 @@ const EditTaskModal = ({ isOpen, onClose, onSubmit, task, projectId, stages, ava
                                       <div className="ml-3 flex-1 min-w-0">
                                         <div className="text-sm font-medium truncate">{member.username}</div>
                                       </div>
-                                    </div>
+                                    </button>
                                   ))
                                 ) : (
                             <div className="px-4 py-3 text-sm text-gray-500 text-center">
@@ -409,7 +483,7 @@ const EditTaskModal = ({ isOpen, onClose, onSubmit, task, projectId, stages, ava
                     )}
                   </div>
 
-                  {(!availableMembers || availableMembers.length === 0) && (
+                  {(!projectMembers || projectMembers.length === 0) && (
                     <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-xl">
                       <div className="flex items-center">
                         <AlertTriangle className="h-4 w-4 text-yellow-600 mr-2" />

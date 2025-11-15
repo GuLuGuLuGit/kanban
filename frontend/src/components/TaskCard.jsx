@@ -43,14 +43,9 @@ const TaskCard = ({ task, onUpdate, onDelete, onMove, onViewDetail }) => {
     'done': { label: '已完成', color: 'text-green-600 bg-green-100' }
   };
 
-  // 检查权限
-  const canEdit = hasProjectPermission('manage_tasks', { user_role: 'project_owner' }) || 
-                  hasProjectPermission('manage_tasks', { user_role: 'project_manager' }) ||
-                  hasProjectPermission('manage_tasks', { user_role: 'collaborator' });
-  
-  const canDelete = hasProjectPermission('manage_tasks', { user_role: 'project_owner' }) || 
-                    hasProjectPermission('manage_tasks', { user_role: 'project_manager' }) ||
-                    hasProjectPermission('manage_tasks', { user_role: 'collaborator' });
+  // 检查权限 - 单机版：登录用户可以做所有操作
+  const canEdit = hasProjectPermission('manage_tasks', null);
+  const canDelete = hasProjectPermission('manage_tasks', null);
 
   // 处理更新
   const handleUpdate = async () => {

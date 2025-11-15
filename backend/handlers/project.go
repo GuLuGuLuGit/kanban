@@ -458,11 +458,16 @@ func (h *ProjectHandler) DeleteProject(c *gin.Context) {
 		return
 	}
 
-	// 单机版：所有项目成员都可以删除项目
-	if !utils.CanManageProject(userID, uint(projectID)) {
-		utils.Forbidden(c, "Insufficient permissions to delete project")
-		return
-	}
+	// 单机版：所有登录用户都可以删除项目（不需要检查成员关系）
+	// 在单机版中，只要用户已通过JWT认证，就可以执行删除操作
+	// userID 已通过 JWT 认证获取，保留用于将来的日志记录或审计功能
+	_ = userID // 消除未使用变量警告
+	
+	// 如果需要保留权限检查，可以取消下面的注释：
+	// if !utils.CanManageProject(userID, uint(projectID)) {
+	// 	utils.Forbidden(c, "Insufficient permissions to delete project")
+	// 	return
+	// }
 
 	// 开始事务
 	tx := database.DB.Begin()
