@@ -167,6 +167,19 @@ const ProjectBoard = () => {
             dueDate: null,
             createdDate: null,
         });
+        
+        // 注册全局刷新函数，供外部调用（如 Layout 中的项目更新）
+        window.refreshProjectData = () => {
+            console.log('外部触发刷新项目数据');
+            loadProjectData();
+        };
+        
+        // 清理函数
+        return () => {
+            if (window.refreshProjectData) {
+                delete window.refreshProjectData;
+            }
+        };
     }, [projectId]);
 
     // 调试：监听任务和阶段数据变化
@@ -795,6 +808,19 @@ const ProjectBoard = () => {
                 fetchCompletedTasksStats();
             }
             
+            // 如果任务状态或阶段发生变化，重新获取任务列表以确保数据一致性
+            const originalTask = tasks.find(t => t.id === taskId);
+            if (originalTask && (
+                taskData.status !== originalTask.status || 
+                taskData.stage_id !== originalTask.stage_id
+            )) {
+                console.log('任务状态或阶段发生变化，重新获取任务列表');
+                // 延迟重新获取，避免与当前更新冲突
+                setTimeout(() => {
+                    fetchProjectTasks();
+                }, 100);
+            }
+            
             setShowEditTaskModal(false);
             setEditingTask(null);
             
@@ -845,18 +871,28 @@ const ProjectBoard = () => {
             // 调用API更新任务状态为完成
             const response = await taskAPI.updateTask(taskId, { status: 'done' });
             
-            if (response.task) {
+            if (response.task || response) {
+                const updatedTask = response.task || response;
+                
                 // 更新本地任务状态
                 setTasks(prevTasks => prevTasks.map(task => 
-                    task.id === taskId ? { ...task, status: 'done' } : task
+                    task.id === taskId ? { ...task, ...updatedTask, status: 'done' } : task
                 ));
+                
+                // 更新已完成任务统计和列表
+                fetchCompletedTasksStats();
+                
+                // 重新获取任务列表以确保看板视图正确刷新
+                setTimeout(() => {
+                    fetchProjectTasks();
+                }, 100);
                 
                 // 更新项目过期状态
                 if (window.updateProjectOverdueStatus) {
                     window.updateProjectOverdueStatus(projectId);
                 }
 
-                console.log('任务已完成');
+                console.log('任务已完成，看板视图已刷新');
             }
         } catch (error) {
             console.error('快速完成任务失败:', error);

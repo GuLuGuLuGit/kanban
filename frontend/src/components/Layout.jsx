@@ -816,7 +816,39 @@ const Layout = () => {
           }}
           project={selectedProject}
           onUpdate={(updatedProject) => {
-            setProjects(prev => prev.map(p => p.id === updatedProject.id ? updatedProject : p));
+            // 更新项目列表
+            setProjects(prev => prev.map(p => {
+              if (p.id === updatedProject.id) {
+                // 保留原有的统计信息，只更新基本信息
+                return {
+                  ...p,
+                  ...updatedProject,
+                  // 保留任务统计信息（如果有）
+                  taskStats: p.taskStats || updatedProject.taskStats,
+                  hasOverdueTasks: p.hasOverdueTasks !== undefined ? p.hasOverdueTasks : updatedProject.hasOverdueTasks
+                };
+              }
+              return p;
+            }));
+            
+            // 如果当前选中的项目是更新的项目，同步更新 selectedProject
+            if (selectedProject?.id === updatedProject.id) {
+              setSelectedProject(prev => ({
+                ...prev,
+                ...updatedProject,
+                // 保留原有的其他属性
+                taskStats: prev?.taskStats || updatedProject.taskStats,
+                hasOverdueTasks: prev?.hasOverdueTasks !== undefined ? prev.hasOverdueTasks : updatedProject.hasOverdueTasks
+              }));
+              
+              // 通知 ProjectBoard 刷新项目数据（如果当前在项目页面）
+              if (location.pathname.includes(`/projects/${updatedProject.id}`)) {
+                // 通过 window 事件或直接调用刷新函数
+                if (window.refreshProjectData) {
+                  window.refreshProjectData();
+                }
+              }
+            }
           }}
           onDelete={(projectId) => {
             // 删除项目后，清空相关状态
